@@ -1,4 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
+import ChatGPTEmbed from '@/components/ChatGPTEmbed';
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -41,7 +43,7 @@ export default function SmartChatbot({ userId, isFloating = false, onClose }: Sm
     {
       id: '1',
       type: 'bot',
-      content: 'مرحباً! أنا مساعدك الذكي في تعلم الكيمياء. يمكنني الإجابة على أسئلتك بناءً على الملفات التي رفعتها والمحتوى التعليمي. كيف يمكنني مساعدتك اليوم؟',
+      content: 'مرحباً! أنا مساعدك الذكي في تعلم الكيمياء. يمكنني الإجابة على أسئلتك بناءً على الfileات التي رفعتها والمحتوى التعليمي. كيف يمكنني مساعدتك اليوم؟',
       timestamp: new Date()
     }
   ]);
@@ -55,7 +57,7 @@ export default function SmartChatbot({ userId, isFloating = false, onClose }: Sm
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const chatContainer = useRef<HTMLDivElement>(null);
 
-  // تحميل الملفات المدربة
+  // تحميل الfileات المدربة
   useEffect(() => {
     loadTrainedFiles();
   }, [userId]);
@@ -111,7 +113,7 @@ export default function SmartChatbot({ userId, isFloating = false, onClose }: Sm
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         type: 'bot',
-        content: 'عذراً، حدث خطأ في معالجة سؤالك. يرجى المحاولة مرة أخرى.',
+        content: 'Sorry, an error occurred while processing your question. Please try again.',
         timestamp: new Date()
       };
       setMessages(prev => [...prev, errorMessage]);
@@ -122,7 +124,7 @@ export default function SmartChatbot({ userId, isFloating = false, onClose }: Sm
 
   // توليد الاستجابة الذكية
   const generateResponse = async (question: string): Promise<{ content: string; fileContext?: string }> => {
-    // البحث في الملفات المدربة
+    // البحث في الfileات المدربة
     const relevantContent = searchInTrainedFiles(question);
     
     // قاعدة معرفية أساسية للكيمياء
@@ -145,7 +147,7 @@ export default function SmartChatbot({ userId, isFloating = false, onClose }: Sm
     }
   };
 
-  // البحث في الملفات المدربة
+  // البحث في الfileات المدربة
   const searchInTrainedFiles = (question: string): { content: string; filename: string } | null => {
     const keywords = extractKeywords(question);
     
@@ -201,21 +203,21 @@ export default function SmartChatbot({ userId, isFloating = false, onClose }: Sm
 
   // توليد استجابة بناءً على السياق
   const generateContextualResponse = (question: string, context: { content: string; filename: string }): string => {
-    return `بناءً على محتوى الملف "${context.filename}":\n\n${context.content}\n\nهل تحتاج لمزيد من التوضيح حول هذا الموضوع؟`;
+    return `بناءً على محتوى الfile "${context.filename}":\n\n${context.content}\n\nهل تحتاج لمزيد من التوضيح حول هذا الموضوع؟`;
   };
 
   // توليد استجابة عامة
   const generateGeneralResponse = (question: string): string => {
     const responses = [
-      'هذا سؤال مثير للاهتمام! للأسف لا أجد معلومات كافية في قاعدة البيانات الحالية. هل يمكنك رفع ملفات تحتوي على المعلومات المطلوبة؟',
-      'أعتذر، لا أستطيع العثور على إجابة دقيقة لهذا السؤال حالياً. يمكنك تجربة رفع ملفات إضافية أو إعادة صياغة السؤال.',
-      'سؤال رائع! لتحسين إجاباتي، يمكنك رفع ملفات دراسية تحتوي على الموضوع الذي تسأل عنه. هذا سيساعدني في تقديم إجابات أكثر دقة.'
+      'هذا سؤال مثير للاهتمام! للأسف لا أجد معلومات كافية في قاعدة البيانات الحالية. هل يمكنك رفع fileات تحتوي على المعلومات المطلوبة؟',
+      'أعتذر، لا أستطيع العثور على إجابة دقيقة لهذا السؤال حالياً. يمكنك تجربة رفع fileات إضافية أو إعادة صياغة السؤال.',
+      'سؤال رائع! لتحسين إجاباتي، يمكنك رفع fileات دراسية تحتوي على الموضوع الذي تسأل عنه. هذا سيساعدني في تقديم إجابات أكثر دقة.'
     ];
     
     return responses[Math.floor(Math.random() * responses.length)];
   };
 
-  // تدريب البوت على ملف جديد
+  // تدريب البوت على file جديد
   const trainOnNewFiles = async () => {
     setIsTraining(true);
     try {
@@ -256,7 +258,7 @@ export default function SmartChatbot({ userId, isFloating = false, onClose }: Sm
             <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
               <Bot className="h-5 w-5 text-blue-600" />
             </div>
-            <span className="font-medium text-sm">المساعد الذكي</span>
+            <span className="font-medium text-sm">Smart Assistant</span>
           </div>
           <div className="flex items-center gap-1">
             <Button
@@ -325,7 +327,7 @@ export default function SmartChatbot({ userId, isFloating = false, onClose }: Sm
                 <Input
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
-                  placeholder="اكتب سؤالك هنا..."
+                  placeholder="اكType your question here..."
                   onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
                   className="text-sm"
                 />
@@ -358,7 +360,7 @@ export default function SmartChatbot({ userId, isFloating = false, onClose }: Sm
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">
-                تم تدريب البوت على {trainedFiles.length} ملف
+                Bot trained on {trainedFiles.length} file
               </p>
               <div className="flex flex-wrap gap-2">
                 {trainedFiles.slice(0, 3).map((file) => (
@@ -369,7 +371,7 @@ export default function SmartChatbot({ userId, isFloating = false, onClose }: Sm
                 ))}
                 {trainedFiles.length > 3 && (
                   <Badge variant="outline" className="text-xs">
-                    +{trainedFiles.length - 3} ملف آخر
+                    +{trainedFiles.length - 3} file آخر
                   </Badge>
                 )}
               </div>
@@ -469,8 +471,13 @@ export default function SmartChatbot({ userId, isFloating = false, onClose }: Sm
           <div className="flex gap-3">
             <Input
               value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder="اكتب سؤالك هنا..."
+              on
+          {/* Embedded ChatGPT iframe (looks native) */}
+          <div className="w-full my-4">
+            <ChatGPTEmbed height={480} />
+          </div>
+Change={(e) => setInput(e.target.value)}
+              placeholder="اكType your question here..."
               onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
               className="flex-1"
             />
